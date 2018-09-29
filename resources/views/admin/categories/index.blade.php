@@ -1,8 +1,12 @@
 @extends('layouts.app')
 @section('content')
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<h3>Categories</h3>
+	<div class="card">
+		<div class="card-header">
+		    <h5>Categories</h5>	
+	  	</div>
+	
+		<div class="card-body">
+						
 			<table class="table table-hover">
 				<thead>
 					<th>
@@ -21,14 +25,15 @@
 							<td>
 								{{$category->name}}
 							</td>
-							<td><a class="btn btn-info">Edit</a></td>
-							<td><a class="btn btn-danger">Delete</a></td>
+							<td><a href="{{route('category.edit',['id' => $category->id])}}" class="btn btn-info">Edit</a></td>
+							<td><a href="{{route('category.delete',['id' => $category->id])}}" class="btn btn-danger">Delete</a></td>
 						</tr>
 					@endforeach
 				</tbody>
 				
 			</table>
 		</div>
+		
 	</div>
 
 
