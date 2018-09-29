@@ -30,6 +30,16 @@ Route::group(['prefix' => 'admin','middleware'=>'auth'],function(){
 		'uses' => 'PostsController@store',
 		'as'   => 'post.store'
 	]);
+	Route::get('/posts',[
+		'uses' => 'PostsController@index',
+		'as'   => 'posts'
+	]);
+	Route::get('/post/delete/{id}',[
+		'uses' => 'PostsController@destroy',
+		'as'   => 'post.delete'
+	]);
+
+
 	Route::get('/categories',[
 		'uses' => 'CategoriesController@index',
 		'as'   => 'categories'
@@ -42,6 +52,17 @@ Route::group(['prefix' => 'admin','middleware'=>'auth'],function(){
 		'uses' => 'CategoriesController@store',
 		'as'   => 'category.store'
 	]);
-
+	Route::get('/category/edit/{id}',[
+		'uses' => 'CategoriesController@edit',
+		'as'   => 'category.edit'
+	]);
+	Route::get('/category/delete/{id}',[
+		'uses' => 'CategoriesController@destroy',
+		'as'   => 'category.delete'
+	]);
+	Route::post('/category/update/{id}',[
+		'uses' => 'CategoriesController@update',
+		'as'   => 'category.update'
+	]);
 });
 
