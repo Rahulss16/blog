@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Session;
+use App\Tag;
 use App\Post;
 use App\Category;
 use Illuminate\Http\Request;
@@ -27,11 +28,14 @@ class PostsController extends Controller
     public function create()
     {
         $categories = Category::all();
-        if (count($categories) == 0) {
-            Session::flash('info', 'You must have some categories before attemping to create a post.');
+        $tags = Tag::all();
+        if (count($categories) == 0 || count($tags) == 0) {
+            Session::flash('info','You must have some categories and tags before attemping to create a post.');
             return redirect()->back();
         }
-        return view('admin.posts.create')->with('categories', $categories);
+        
+        return view('admin.posts.create')->with('categories', $categories)
+                                         ->with('tags',$tags);
     }
 
     /**
@@ -43,10 +47,11 @@ class PostsController extends Controller
     public function store(Request $request)
     {
         $this->validate($request,[
-            'title' => 'required',
-            'featured' =>'required|image',
-            'content'  =>'required',
-            'category_id' => 'required'
+            'title'       => 'required',
+            'featured'    =>'required|image',
+            'content'     =>'required',
+            'category_id' => 'required',
+            'tags'        => 'required'
         ]);
 
         $featured = $request->featured;
@@ -55,12 +60,13 @@ class PostsController extends Controller
         $featured->move('uploads/posts',$featured_new_name);
 
         $post = Post::create([
-            'title' =>$request->title,
-            'content' =>$request->content,
-            'featured' => 'uploads/posts/'.$featured_new_name,
+            'title'       =>$request->title,
+            'content'     =>$request->content,
+            'featured'    => 'uploads/posts/'.$featured_new_name,
             'category_id' => $request->category_id,
             'slug'        => str_slug($request->title)
         ]);
+        $post->tags()->attach($request->tags);
 
         Session::flash('success','Post created successfully.');
         // dd($request->all());
@@ -86,7 +92,11 @@ class PostsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::find($id);
+
+        return view('admin.posts.edit')->with('post',$post)
+                                       ->with('categories',Category::all())
+                                       ->with('tags',Tag::all());
     }
 
     /**
@@ -98,7 +108,34 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // dd($request->all());
+        $this->validate($request,[
+            'title' => 'required',
+            'content'  =>'required',
+            'category_id' => 'required'
+        ]);
+        $post = Post::find($id);
+        if ($request->hasFile('featured')) {
+            $this->validate($request,[
+                'featured' => 'image'
+            ]);
+            $featured = $request->featured;
+            $featured_new_name = time().$featured->getClientOriginalName();
+
+            $featured->move('uploads/posts',$featured_new_name);
+            $post->featured = 'uploads/posts/'.$featured_new_name;
+        }
+        $post->title = $request->title;
+        $post->content = $request->content;
+        $post->category_id = $request->category_id;
+
+        $post->save();
+        $post->tags()->sync($request->tags);
+        Session::flash('success','Post is successfully updated.');
+
+        return redirect()->route('posts');
+ 
+
     }
 
     /**
@@ -113,6 +150,29 @@ class PostsController extends Controller
 
         $post->delete();
         Session::flash('success','The Post was just trashed');
+        return redirect()->route('posts');
+    }
+    public function trashed()
+    {
+        $posts = Post::onlyTrashed()->get();
+        return view('admin.posts.trashed')->with('posts',$posts);
+    }
+
+    public function kill($id)
+    {
+        $post = Post::withTrashed()->where('id',$id)->first();
+        $post->forceDelete();
+
+        Session::flash('success','Post Deleted Permanently.');
+        return redirect()->back();
+    }
+
+    public function restore($id)
+    {
+        $post = Post::withTrashed()->where('id',$id)->first();
+        $post->restore();
+
+        Session::flash('success','Post Restored Successfully.');
         return redirect()->route('posts');
     }
 }

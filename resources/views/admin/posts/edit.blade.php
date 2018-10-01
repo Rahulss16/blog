@@ -4,15 +4,15 @@
 	@include('includes.errors')
 	<div class="card">
 		<div class="card-header">
-		    <h3 class="card-title">Create a new post</h3>
+		    <h3 class="card-title">Edit post : {{$post->title}}</h3>
 	  	</div>
 		<div class="card-body">
 			
-			<form action="{{route('post.store')}}" method="post" enctype="multipart/form-data">
+			<form action="{{route('post.update',['id' => $post->id])}}" method="post" enctype="multipart/form-data">
 				@csrf
 				<div class="form-group">
 					<label for="title">Title</label>
-					<input type="text" name="title" class="form-control">
+					<input type="text" name="title" value="{{$post->title}}" class="form-control">
 				</div>
 				<div class="form-group">
 					<label for="featured">Featured Image</label>
@@ -22,7 +22,11 @@
 					<label for="category">Select a category</label>
 					<select name="category_id" id="category" class="form-control">
 						@foreach($categories as $category)
-							<option value="{{$category->id}}">{{$category->name}}</option>
+							<option value="{{$category->id}}"
+								@if($post->category_id == $category->id)
+									selected 
+								@endif
+							>{{$category->name}}</option>
 						@endforeach
 					</select>
 				</div>
@@ -30,17 +34,23 @@
 					<label for="tags">Select Tags</label>
 					@foreach($tags as $tag)
 						<div class="checkbox">
-							<label><input type="checkbox" name="tags[]" value="{{$tag->id}}"> {{$tag->tag}}</label>
+							<label><input type="checkbox" name="tags[]" value="{{$tag->id}}"
+								@foreach($post->tags as $t)
+									@if($tag->id == $t->id)
+										checked
+									@endif 
+								@endforeach
+								> {{$tag->tag}}</label>
 						</div>
 					@endforeach
 				</div>
 				<div class="form-group">
 					<label for="content">Content</label>
-					<textarea name="content" id="content" cols="5" rows="5" class="form-control"></textarea>
+					<textarea name="content" id="content" cols="5" rows="5" class="form-control">{{$post->content}}</textarea>
 				</div>
 				<div class="form-group">
 					<div class="text-center">
-						<button class="btn btn-success" type="submit">Store post</button>
+						<button class="btn btn-success" type="submit">Update post</button>
 					</div>
 				</div>
 				
