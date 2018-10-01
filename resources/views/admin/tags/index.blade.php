@@ -2,7 +2,7 @@
 @section('content')
 	<div class="card">
 		<div class="card-header">
-		    <h5>Categories</h5>	
+		    <h5>Tags</h5>	
 	  	</div>
 	
 		<div class="card-body">
@@ -10,7 +10,7 @@
 			<table class="table table-hover">
 				<thead>
 					<th>
-						Category name
+						Tag name
 					</th>
 					<th>
 						Editing
@@ -20,17 +20,17 @@
 					</th>
 				</thead>
 				<tbody>
-					@forelse($categories as $category)
+					@forelse($tags as $tag)
 						<tr>
 							<td>
-								{{$category->name}}
+								{{$tag->tag}}
 							</td>
-							<td><a href="{{route('category.edit',['id' => $category->id])}}" class="btn btn-info">Edit</a></td>
-							<td><a href="{{route('category.delete',['id' => $category->id])}}" class="btn btn-danger">Delete</a></td>
+							<td><a href="{{route('tag.edit',['id' => $tag->id])}}" class="btn btn-info">Edit</a></td>
+							<td><a href="{{route('tag.delete',['id' => $tag->id])}}" class="btn btn-danger">Delete</a></td>
 						</tr>
 					@empty
 						<tr>
-							<th colspan="5" class="text-center">No categories yet.</th>
+							<th colspan="5" class="text-center">No tag yet.</th>
 						</tr>
 					@endforelse
 				</tbody>

@@ -2,7 +2,7 @@
 @section('content')
 	<div class="card">
 		<div class="card-header">
-		    <h5>Published posts</h5>	
+		    <h5>Trashed Posts</h5>	
 	  	</div>
 	
 		<div class="card-body">
@@ -19,7 +19,10 @@
 						Edit
 					</th>
 					<th>
-						Trash
+						Restore
+					</th>
+					<th>
+						Destroy
 					</th>
 				</thead>
 				<tbody>
@@ -27,14 +30,13 @@
 						<tr>
 							<td><img src="{{$post->featured}}" alt="{{$post->title}}" width="90px" height="50px"></td>
 							<td>{{$post->title}}</td>
-							<td><a href="{{route('post.edit',['id' => $post->id])}}" class="btn btn-info">Edit</a></td>
-							<td>
-								<a href="{{route('post.delete',['id' => $post->id])}}" class="btn btn-danger">Trash</a>
-							</td>
+							<td>Edit</td>
+							<td><a href="{{route('post.restore',['id' => $post->id])}}" class="btn btn-xs btn-success">Restore</a></td>
+							<td><a href="{{route('post.kill',['id' => $post->id])}}" class="btn btn-xs btn-danger">Delete</a></td>
 						</tr>
 					@empty
 						<tr>
-							<th colspan="5" class="text-center">No publish posts.</th>
+							<th colspan="5" class="text-center">No Trashed Posts.</th>
 						</tr>
 					@endforelse
 				</tbody>
